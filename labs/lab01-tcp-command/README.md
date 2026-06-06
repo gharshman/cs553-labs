@@ -2,10 +2,9 @@
 
 ### Submitted by: Glenn R. Harshman, CS553-01, on June 7, 2026
 
-The purpose of this lab was to understand how client/server connections
-are established in Javascript code and how sockets are used to pass data
-between clients and servers.  The client passes data and make requests,
-and the server processes the data and responds with the modified data.
+The purpose of this lab was to understand how client/server connections are established in Javascript code and how
+sockets are used to pass data between clients and servers.  The client passes data and make requests,  and the server
+processes the data and responds with the modified data.
 
 Lab completion process:
 - Instructor's git repository was forked
@@ -19,7 +18,7 @@ Lab completion process:
 
 ## Features
 
-1. The server accepts TCP client connections on port 3000 (configurable...see below).
+1. The server accepts TCP client connections on port 3000 (configurable, see below).
 2. The client must send one command at a time.
 3. The server supports `ECHO`, `UPPER`, `LOWER`, `REVERSE`, `TIME`, and `QUIT` commands.
 4. The server returns an error message for unknown commands.
@@ -29,12 +28,11 @@ Lab completion process:
 ## Commands
 
 1. `ECHO` command: Repeats the string back to the client exactly as typed.
-2. `UPPER` command: Converts alphabetic characters to *upper* case before echoing the string back to the client.
-3. `LOWER` command: Converts alphabetic characters to *lower* case before echoing the string back to the client.
+2. `UPPER` command: Converts alphabetic characters to ***upper*** case before echoing the string back to the client.
+3. `LOWER` command: Converts alphabetic characters to ***lower*** case before echoing the string back to the client.
 4. `REVERSE` command: Echos the client's string back in reverse order, ex. "Hello" becomes "olleH".
-``` The REVERSE command converts the string to an array, invokes the reverse method on the array, and then joins the characters back into a string. ```
 5. `TIME` command: Gives the client the current server-side system time, in 24-hour format.
-6. `QUIT` command: exits the program and terminates the connection.  Server continues to listen for other client connection requests. 
+6. `QUIT` command: exits the program and terminates the connection.  Server continues to listen for other clients.
 
 ## Running the Lab
 
@@ -48,7 +46,8 @@ Lab completion process:
 
 ## Configuring the Port
 
-The server will use port `3000` by default.  You can run the server on a different port by setting the `PORT` environment variable when running the server and when running the client:
+The server will use port `3000` by default.  You can run the server on a different port by setting the `PORT` environment
+variable when running the server and when running the client.  `PORT` must be in ***ALL CAPS***:
 ```
 PORT=4000 npm run server
 PORT=4000 npm run client
