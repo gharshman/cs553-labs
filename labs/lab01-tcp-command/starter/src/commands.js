@@ -12,21 +12,22 @@ export function handleCommand(line) {
         case "ECHO":
             return argument;
 
-        // TODO: implement UPPER
-        // Example:
-        // UPPER hello -> HELLO
+        case "UPPER":
+            return argument.toUpperCase();
 
-        // TODO: implement LOWER
-        // Example:
-        // LOWER HELLO -> hello
+        case "LOWER":
+            return argument.toLowerCase();
 
-        // TODO: implement REVERSE
-        // Example:
-        // REVERSE hello -> olleh
+        case "REVERSE":
+            return argument.split('').reverse().join('');
 
-        // TODO: implement TIME
-        // Example:
-        // TIME -> current server time
+        case "TIME":
+            const timeString = new Intl.DateTimeFormat('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false                    // 24-hour time
+            }).format(new Date());
+            return "The current time is " + timeString;
 
         case "QUIT":
             return "Goodbye.";
