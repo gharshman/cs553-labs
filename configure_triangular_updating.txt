@@ -44,6 +44,10 @@ pull updates from the instructor's repository to your personal computer, then yo
 assignments, then you will push updates to your forked repository.  Nobody else will be updating your forked
 repository, so there is no need to pull from there (after the initial clone).
 
+---> git status                                         // Check to see if you have any changed files
+---> git add .                                          // Add them to the queue for committal
+---> git commit -m "Save my work"                       // Commit your changes
+
 ---> git fetch upstream                                 // Synchronizes the instructor's updates
 ---> git checkout main                                  // Make sure you are working in your main branch
 ---> git merge upstream/main -m "Latest updates"        // Merges the instructor's changes into your main branch
