@@ -1,0 +1,65 @@
+After forking the instructor's repository in Github, you make a clone (remote repository) on your personal computer.
+
+---> cd ~                                                    // Change to home directory (Linux)
+---> git clone https://github.com/gharshman/cs553-labs       // replace URL with your forked repository URL
+
+Then change directory into the cloned repository's directory.
+
+---> cd cs553-labs
+
+Use the following command to see where pulls/pushes will be directed for this remote respository.
+
+---> git remote -v show
+
+Output should appear as follows, with your forked repository URL:
+
+origin	https://github.com/gharshman/cs553-labs (fetch)
+origin	https://github.com/gharshman/cs553-labs (push)
+
+When you fork a repository, you make a detached copy for you to work with.  The repository from which you made the
+fork is called the "upstream" respository.  Throughout the semester, the instructor may continue making changes to
+upstream repository.  You can get these updates by clicking "Sync fork" on your Github repository page, but then
+you would need to pull them to personal computer.  Alternatively, you can sync directly to your remote repository
+(on your personal computer) by adding an upstream reference to your sync config file.
+
+---> git remote add upstream https://github.com/UAH-Computer-Science/cs453-labs
+
+Unfortunately, this also adds a "push" link, which your instructor does not want.  Fix it using the following command:
+
+---> git remote set-url --push upstream DISABLE
+
+Now, when you look at your sync config file, you should see something similar to the following:
+
+---> git remote -v show
+
+origin	https://github.com/gharshman/cs553-labs (fetch)
+origin	https://github.com/gharshman/cs553-labs (push)
+upstream	https://github.com/UAH-Computer-Science/cs453-labs (fetch)
+upstream	DISABLE (push)
+
+Origin refers to your personal forked repository, and upstream refers to the instructor's repository.
+
+Now we move to the part where we update repositories.  In this course, we have a triangular workflow.  You will
+pull updates from the instructor's repository to your personal computer, then you will work on your lab
+assignments, then you will push updates to your forked repository.  Nobody else will be updating your forked
+repository, so there is no need to pull from there (after the initial clone).
+
+---> git fetch upstream                                 // Synchronizes the instructor's updates
+---> git checkout main                                  // Make sure you are working in your main branch
+---> git merge upstream/main -m "Latest updates"        // Merges the instructor's changes into your main branch
+
+On that last command, you can use whatever message you want.  If you leave off the -m and the message, git will
+open your default editor for you to type a message.  When you save and exit the message file, git will continue
+the merge operation and show you which files were updated.
+
+After you complete a lab assignment and submit your link, it is recommended that you create a branch for that lab.
+That way, you can always go back to the version that had your completed lab, even if your files are overwritten
+in the main branch.
+
+---> git branch lab01
+
+Finally, you want to update your forked repository.
+
+---> git push origin main
+---> git push origin lab01
+
