@@ -170,6 +170,30 @@ describe("Lab 2 HTTP JSON server", () => {
         expect(result.body).toHaveProperty("error");
     });
 
+    test("POST /calculate can modulo two numbers", async () => {
+        const result = await postJson("/calculate", {
+            operation: "modulo",
+            a: 10,
+            b: 3
+        });
+
+        expect(result.status).toBe(200);
+        expect(result.body).toEqual({
+            result: 1
+        });
+    });
+
+    test("POST /calculate rejects modulo by zero", async () => {
+        const result = await postJson("/calculate", {
+            operation: "modulo",
+            a: 10,
+            b: 0
+        });
+
+        expect(result.status).toBe(400);
+        expect(result.body).toHaveProperty("error");
+    });
+
     test("POST /calculate rejects unsupported operations", async () => {
         const result = await postJson("/calculate", {
             operation: "power",

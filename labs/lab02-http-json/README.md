@@ -1,310 +1,89 @@
-# Lab 2 - Hello HTTP + JSON
+# Lab 2 - HTTP JSON Command Server
 
-In Lab 1, you worked directly with a TCP socket and created a small command-based server.
+### Submitted by: Glenn R. Harshman, CS553-01, on June 13, 2026
 
-In this lab, you will move up one layer and build a small HTTP JSON service. Instead of inventing your own command format, you will use HTTP methods, paths, status codes, headers, and JSON request/response bodies.
+The purpose of this lab was to understand how HTTP client/server connections are established in Node.js and
+how the request/response mechanism is used to pass data between clients and servers via HTTP GET and POST requests. 
+The client passes data and make requests,  and the server processes the data and responds appropriately.
 
-## Learning Goals
+Lab completion process:
+- Instructor's repository was setup as "upstream" repository and fetched/merged
+- Student's remote repository was branched to "dev"
+- Lab was completed in branch "dev"
+- Added additional "/time" endpoint
+- Added modulo function to "/calculate" endpoint
+- Added functionality to count requests by endpoint/route
+- Added new tests to file `server.test.js`
+- README.MD file was updated
+- Switched back to "main", merged "dev", and branched "lab02" to preserve lab completion
+- Remote repository was pushed to student's Github local repository
+- Link was attached to Canvas submission
 
-By the end of this lab, you should be able to:
+## Features
+### *** <u>All four of the graduate extension features were implemented</u>.***
 
-* Explain the difference between a raw TCP message and an HTTP request.
-* Create a basic HTTP server in Node.js.
-* Read the HTTP method and request path.
-* Parse a JSON request body.
-* Return JSON responses.
-* Use appropriate HTTP status codes.
-* Handle invalid or unexpected client input without crashing the server.
-* Test HTTP request-handling behavior.
-
-## Starter Code Structure
-
-The starter code is located in:
-
-```text
-labs/lab02-http-json/starter/
-```
-
-The starter project has this structure:
-
-```text
-starter/
-├── package.json
-├── src/
-│   └── server.js
-└── test/
-    └── server.test.js
-```
-
-### File Descriptions
-
-| File                  | Purpose                                                    |
-| --------------------- | ---------------------------------------------------------- |
-| `src/server.js`       | Starts the HTTP server and handles incoming HTTP requests. |
-| `test/server.test.js` | Contains automated tests for the HTTP JSON service.        |
-| `package.json`        | Defines project metadata, dependencies, and npm scripts.   |
-
-## Required Features
-
-Your HTTP server must support the following routes.
-
-### `GET /health`
-
-Returns a JSON response showing that the server is running.
-
-Example response:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-### `POST /echo`
-
-Accepts a JSON request body and returns the same data back to the client.
-
-Example request body:
-
-```json
-{
-  "message": "hello"
-}
-```
-
-Example response:
-
-```json
-{
-  "message": "hello"
-}
-```
-
-### `POST /calculate`
-
-Accepts a JSON request body with an operation and two numbers.
-
-Example request body:
-
-```json
-{
-  "operation": "add",
-  "a": 2,
-  "b": 3
-}
-```
-
-Example response:
-
-```json
-{
-  "result": 5
-}
-```
-
-Your server must support at least the following operations:
-
-| Operation  | Meaning               |
-| ---------- | --------------------- |
-| `add`      | Add `a` and `b`       |
-| `subtract` | Subtract `b` from `a` |
-| `multiply` | Multiply `a` and `b`  |
-| `divide`   | Divide `a` by `b`     |
-
-The server should return an error response for unsupported operations.
-
-### `GET /requests`
-
-Returns information about how many requests the server has handled since it started.
-
-Example response:
-
-```json
-{
-  "count": 4
-}
-```
-
-## Error Handling
-
-Your server should not crash when it receives bad input.
-
-At minimum, your server should handle:
-
-* Unknown routes.
-* Unsupported HTTP methods.
-* Invalid JSON.
-* Missing required fields.
-* Unsupported calculation operations.
-* Division by zero.
-
-Use reasonable HTTP status codes such as:
-
-| Status Code | Meaning               |
-| ----------- | --------------------- |
-| `200`       | OK                    |
-| `400`       | Bad request           |
-| `404`       | Not found             |
-| `405`       | Method not allowed    |
-| `500`       | Internal server error |
-
-Error responses should be returned as JSON.
-
-Example error response:
-
-```json
-{
-  "error": "Invalid JSON"
-}
-```
+1. The server accepts HTTP GET and POST commands on port 3000.
+2. The client must send one command at a time.
+3. The server supports `POST /echo`, `GET /health`, `GET /time`, `POST /calculate`, `GET /requests` requests.
+4. The server returns an error message for unknown commands and invalid requests.
+5. This README describes the protocol.
 
 ## Running the Lab
 
-First, move into the starter directory:
+1. `git clone https://github.com/gharshman/cs553-labs`
+2. `cd ./cs553-labs/labs/lab02-http-json/starter`
+3. Install dependencies: `npm install`
+4. In Terminal #1: `npm run server`
+5. In Terminal #2: `npm test`
 
-```bash
-cd labs/lab02-http-json/starter
+Alternatively, while server is running in Terminal #1, you can manually enter individual `curl` commands
+in Terminal #2, or you could run the following command from `cs553-labs/labs/lab02-http-json/starter:
 ```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the server:
-
-```bash
-npm run server
-```
-
-By default, the server should listen on port `3000`.
-
-You can test the server in a browser by visiting:
-
-```text
-http://localhost:3000/health
-```
-
-You can also test it with `curl`.
-
-Example:
-
-```bash
-curl http://localhost:3000/health
-```
-
-Example `POST /echo` request:
-
-```bash
-curl -X POST http://localhost:3000/echo \
-  -H "Content-Type: application/json" \
-  -d '{"message":"hello"}'
-```
-
-Example `POST /calculate` request:
-
-```bash
-curl -X POST http://localhost:3000/calculate \
-  -H "Content-Type: application/json" \
-  -d '{"operation":"add","a":2,"b":3}'
+bash -v my_test.sh
 ```
 
 ## Configuring the Port
 
-The server should use port `3000` by default.
-
-You can run the server on a different port by setting the `PORT` environment variable:
-
-```bash
+The server will use port `3000` by default.  You can run the server on a different port by setting the `PORT` environment
+variable when running the server and when running the client.  `PORT` must be in ***ALL CAPS***:
+```
 PORT=4000 npm run server
+PORT=4000 npm run client
 ```
-
-Then send requests to the new port:
-
-```bash
-curl http://localhost:4000/health
-```
-
-## Testing
-
-This lab includes automated tests for the HTTP JSON service.
-
-Run the tests from the starter directory:
-
-```bash
-npm test
-```
-
-Some tests may fail when you first receive the starter code. Your job is to update the implementation until the required tests pass.
-
-The tests should check behavior such as:
-
-* `GET /health` returns a JSON status response.
-* `POST /echo` returns the submitted JSON data.
-* `POST /calculate` performs supported calculations.
-* Unknown routes return an error.
-* Invalid JSON returns an error.
-* The server does not crash on bad input.
-
-You may also run the tests in watch mode if supported by the starter project:
-
-```bash
-npm run test:watch
-```
-
-## Suggested Workflow
-
-1. Run the server before changing anything.
-2. Try `GET /health` manually in a browser or with `curl`.
-3. Run the automated tests.
-4. Open `src/server.js`.
-5. Implement one route at a time.
-6. Run `npm test` after each change.
-7. Test manually with `curl`.
-8. Update this README if your final behavior differs from the examples.
 
 ## Reflection Questions
 
-Answer the following questions in your submission:
+#### 1. What is the difference between a TCP message and an HTTP request?
 
-1. What is the difference between a TCP message and an HTTP request?
-2. What does the `Content-Type: application/json` header tell the server?
-3. Why should a server return different HTTP status codes for different situations?
-4. What happens if the client sends invalid JSON?
-5. How is this lab different from Lab 1?
+A TCP message is a Transport layer (Layer 4) message.  It is characterized by being connection-oriented, established
+by 3-way handshake, disassembly into packets, reassembly and accounting on the other end, retransmission of lost
+packets, etc.
 
-## Graduate Students
+By contrast, an HTTP Request is an Application layer (Layer 7) message characterized by request-response model,
+header/status/body structure, and more predictable schema.  It uses a familiar CRUD operation framework, and it 
+is the foundation for web transactions.  Easy to adapt to HTML forms.
 
-Graduate students should complete one additional feature.
+#### 2. What does the `Content-Type: application/json` header tell the server?
 
-Choose one of the following:
+The Content-Type header gives the server confirmation of the data format, so that the server's backend logic 
+knows how to handle, parse, and translate the incoming data.  In this case, we are using the JavaScript Object 
+Notation (JSON) data format.
 
-1. Add a new route, such as `GET /time` or `POST /uppercase`.
-2. Add one additional calculation operation and document it.
-3. Improve the request counter so it tracks counts by route.
-4. Add additional automated tests for error handling.
+#### 3. Why should a server return different HTTP status codes for different situations?
 
-Document your graduate extension in your submission.
+Status codes are for standardization.  Without these codes, every programmer in the world would have a free
+license to define success and failure in their own manner.  Standardized codes make it easier to handle 
+different situations and failure types, and it makes the web more reliable and predictable.
 
-## Submission
+#### 4. What happens if the client sends invalid JSON?
 
-Submit your completed lab according to the course submission instructions.
+If a client specifies JSON format and then does not comply with their own specification, the client should not
+expect the server to untangle the mess.  The server will not be able to parse the data object, and the request
+will be rejected.  The client should expect a "Status 400: Bad Request" HTTP status code.
 
-Your submission should include:
+#### 5. How is this lab different from Lab 1?
 
-* Your updated source code.
-* Your completed HTTP JSON server.
-* Your updated README if you changed or extended the API.
-* Your answers to the reflection questions.
-* Any graduate extension work, if applicable.
-
-Before submitting, verify that:
-
-```bash
-npm test
-```
-
-runs successfully.
-
-Submit your GitHub link in the Canvas assignment for this lab.
+In Lab #2, the code more closely resembles the object-oriented approach that most students are familiar with.
+We see more functions, methods, try-catch statements, and error handling.  Additionally, Lab #1 felt more mechanistic,
+whereas Lab #2 seems more focused on functionality.  From Lab #2, it is not a large step to making web pages to
+handle these GET and POST calls for us.

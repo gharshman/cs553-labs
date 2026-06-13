@@ -3,10 +3,7 @@ import http from "node:http";
 const PORT = process.env.PORT || 3000;
 
 function sendJson(res, statusCode, data) {
-    res.writeHead(statusCode, {
-        "Content-Type": "application/json"
-    });
-
+    res.writeHead(statusCode, { "Content-Type": "application/json" });
     res.end(JSON.stringify(data));
 }
 
