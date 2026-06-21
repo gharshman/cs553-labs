@@ -1,335 +1,103 @@
 # Lab 3 - REST API with Express
 
-## Overview
+### Submitted by: Glenn R. Harshman, CS553-01, on June 20, 2026
 
-In this lab, you will build a small REST-style API using Express.
+The purpose of this lab was to understand how Node.js Express can ease the creation of REST-style APIs.
+Express makes it easier and faster to organize API routes, parse JSON request bodies, return JSON responses,
+and use HTTP methods and status codes more clearly.
 
-In Lab 2, you worked with HTTP and JSON using Node's built-in `http` module. In this lab, you will use Express to organize API routes, parse JSON request bodies, return JSON responses, and use HTTP methods and status codes more clearly.
+In this lab, we create an API for managing a small in-memory collection of items.  Because the collection
+is defined in the Node.js program and not stored in a separate persistent database, the date collection
+resets every time the server is restarted.
 
-You will create an API for managing a small in-memory collection of items. The data does not need to be stored in a database. It can reset each time the server restarts.
+## Lab Completion Process:
+- Instructor's upstream repository was fetched/merged
+- Student's remote repository was branched to "dev"
+- Lab was completed in branch "dev"
+- Added all functionality and endpoints/routes
+- Added new tests to file `server.test.js`
+- README.MD file was updated
+- Switched back to "main", merged "dev", and branched "lab03" to preserve lab completion
+- Remote repository was pushed to student's Github local repository
+- Link was attached to Canvas submission
 
-## Learning Goals
+## Features     
 
-By the end of this lab, you should be able to:
+#### <em><u>*** All of the graduate extension features were implemented. ***</u></em>
 
-- Create an Express server.
-- Define API routes using `app.get()`, `app.post()`, `app.put()`, and `app.delete()`.
-- Use route parameters such as `/items/:id`.
+- Created an Express server and a collection of JSON items with fields {`id`, `name`, `quantity`}.
+- Defined API routes using `app.get()`, `app.post()`, `app.put()`, and `app.delete()`.
+- Defined routes:     
+  * `GET /health`
+  * `GET /items`
+  * `GET /items/:id`
+  * `POST /items`
+  * `PUT /items/:id`
+  * `DELETE /items/:id`
 - Read JSON request bodies using `express.json()`.
 - Return JSON responses using `res.json()`.
-- Use appropriate HTTP status codes.
+- Use appropriate HTTP status codes for successes and failures.
 - Implement basic REST-style CRUD operations.
-- Describe an API using a simple OpenAPI YAML file.
-- Test API behavior with automated tests and `curl`.
+- Described the API using a simple OpenAPI YAML file.
+- Created automated test file to test API behavior.
+- Created text file to run multiple tests with `curl`.
 
-## Required Features
+## Running the Lab
 
-Your API must manage a collection of items.
+1. `git clone https://github.com/gharshman/cs553-labs`
+2. `cd ./cs553-labs/labs/lab03-rest-api/starter`
+3. Install dependencies: `npm install`
+4. In Terminal #1: `npm run server`
+5. In Terminal #2: `npm test`
 
-Each item must have at least:
-
-```json
-{
-  "id": 1,
-  "name": "keyboard",
-  "quantity": 10
-}
-```
-
-You may add additional fields, but your API must still support `id`, `name`, and `quantity`.
-
-Your server must support the following routes:
-
-| Method | Route | Description |
-|---|---|---|
-| GET | `/health` | Return a simple health check response |
-| GET | `/items` | Return all items |
-| GET | `/items/:id` | Return one item by ID |
-| POST | `/items` | Create a new item |
-| PUT | `/items/:id` | Update an existing item |
-| DELETE | `/items/:id` | Delete an existing item |
-
-## Expected Behavior
-
-### `GET /health`
-
-Returns:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-### `GET /items`
-
-Returns an array of items.
-
-Example response:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "keyboard",
-    "quantity": 10
-  },
-  {
-    "id": 2,
-    "name": "mouse",
-    "quantity": 5
-  }
-]
-```
-
-### `GET /items/:id`
-
-Returns the matching item if it exists.
-
-Example response:
-
-```json
-{
-  "id": 1,
-  "name": "keyboard",
-  "quantity": 10
-}
-```
-
-If the item does not exist, return a `404` response.
-
-Example error response:
-
-```json
-{
-  "error": "Item not found"
-}
-```
-
-### `POST /items`
-
-Creates a new item.
-
-The client should send a JSON request body with `name` and `quantity`.
-
-Example request body:
-
-```json
-{
-  "name": "monitor",
-  "quantity": 4
-}
-```
-
-The server should assign the `id`.
-
-Example response:
-
-```json
-{
-  "id": 3,
-  "name": "monitor",
-  "quantity": 4
-}
-```
-
-A successful create request should return status code `201`.
-
-If the request body is missing required fields or contains invalid data, return a `400` response with a JSON error message.
-
-### `PUT /items/:id`
-
-Updates an existing item.
-
-For this lab, `PUT /items/:id` should replace the `name` and `quantity` values for the item. The request body should include both `name` and `quantity`.
-
-Example request body:
-
-```json
-{
-  "name": "mechanical keyboard",
-  "quantity": 12
-}
-```
-
-If the item exists, return the updated item.
-
-If the item does not exist, return a `404` response.
-
-If the request body is missing required fields or contains invalid data, return a `400` response with a JSON error message.
-
-### `DELETE /items/:id`
-
-Deletes an existing item.
-
-If the item exists, delete it and return status code `204`.
-
-A `204` response does not need to include a response body.
-
-If the item does not exist, return a `404` response.
-
-## Error Responses
-
-Your API should return reasonable error messages as JSON.
-
-Example:
-
-```json
-{
-  "error": "Item not found"
-}
-```
-
-You do not need to use exactly the same wording as this README, but your errors should be clear and helpful.
-
-## OpenAPI Requirement
-
-Include an `openapi.yaml` file that describes your API.
-
-The OpenAPI file should describe:
-
-- The API title and version.
-- The local server URL.
-- Each required route.
-- The expected request body for creating or updating an item.
-- The expected response body for each route.
-- Basic error responses.
-
-The OpenAPI file does not have to be perfect, but it should match the API you implemented.
-
-YAML is indentation-sensitive. Use spaces, not tabs. The examples in this course use 2 spaces per indentation level.
-
-## Running the Starter
-
-Move into the lab directory:
+Alternatively, while server is running in Terminal #1, you can manually enter individual `curl` commands
+in Terminal #2, or you could run the following command from `cs553-labs/labs/lab02-http-json/starter:
 
 ```bash
-cd labs/lab03-rest-api/starter
+bash -v add_items.sh
 ```
 
-Install dependencies:
+## Configuring the Port
+
+The server will use port `3000` by default.  You can run the server on a different port by setting the `PORT`
+environment variable when running the server and when running the client.  `PORT` must be in ***ALL CAPS***:
 
 ```bash
-npm install
+PORT=4000 npm run server
+PORT=4000 npm run client
 ```
 
-Start the server:
+## Reflection Questions & Answers
 
-```bash
-npm run server
-```
+#### 1. What makes this API more "REST-like" than the previous HTTP/JSON lab?
 
-The server listens on port `3000` by default.
+In the previous lab, we were dealing directly with HTTP commands GET & POST, which are verbs and appear more
+like function calls or remote procedure calls (RPCs).  REST APIs focus more on the nouns, e.g., item, id, name,
+etc., so they seem more like class methods from object-oriented programming.
 
-## Testing with curl
+#### 2. What is the purpose of a route parameter such as `/items/:id`?
 
-After starting the server, test the health route:
+By passing the object/noun through the URL, you are helping to enforce abstraction and hiding of the methods
+that are acting on the data.  You are hiding field names and query strings especially, which were formerly
+passed in the URL back in the dark days of `.asp` and `.php` pages.  It helps with data fetching and code efficiency.
 
-```bash
-curl http://localhost:3000/health
-```
+#### 3. Why should `POST`, `PUT`, and `DELETE` use different HTTP methods?
 
-Expected response:
+They require different methods because they are designed for different operations.  `POST` is used to create a new
+database record, `PUT` is used to update an existing record, and `DELETE` is used to remove a record.  Clearly
+defining these operations allows us to have predictable, standardized operations between clients and servers.
 
-```json
-{
-  "status": "ok"
-}
-```
+#### 4. What is the difference between a `400` error and a `404` error?
 
-As you implement the lab, add additional `curl` tests for the item routes.
+Having standardized response status codes also helps to maintain clarity in successful and unsuccessful client-server
+transactions.  Error response codes that start with 4xx indicate that the client did something wrong and the server
+is unable to satisfy the client's request.  Specifically...
 
-Example:
+* Status `400` means that the client's request had malformed syntax or bad format, i.e., the client passed bad data.
+* Status `404` means that the server cannot find the requested resource, i.e., the client's syntax was fine, but the
+requested resource does not exist.
 
-```bash
-curl http://localhost:3000/items
-```
+#### 5. How does the OpenAPI file relate to your Express server code?
 
-Example `POST` request:
-
-```bash
-curl -X POST http://localhost:3000/items \
-  -H "Content-Type: application/json" \
-  -d '{"name":"monitor","quantity":4}'
-```
-
-Example `PUT` request:
-
-```bash
-curl -X PUT http://localhost:3000/items/1 \
-  -H "Content-Type: application/json" \
-  -d '{"name":"mechanical keyboard","quantity":12}'
-```
-
-Example `DELETE` request:
-
-```bash
-curl -X DELETE http://localhost:3000/items/1
-```
-
-## Automated Testing
-
-Your project should include automated tests.
-
-At minimum, your tests should verify that:
-
-- `GET /health` returns `{ "status": "ok" }`.
-- `GET /items` returns a list of items.
-- `POST /items` creates a new item.
-- `GET /items/:id` can retrieve an item.
-- `PUT /items/:id` updates an item.
-- `DELETE /items/:id` deletes an item.
-- A missing item returns `404`.
-
-The starter includes one small test for `GET /health`. You should add more tests as you complete the lab.
-
-Run tests with:
-
-```bash
-npm test
-```
-
-## Reflection Questions
-
-Answer the following questions in your submission:
-
-1. What makes this API more "REST-like" than the previous HTTP/JSON lab?
-2. What is the purpose of a route parameter such as `/items/:id`?
-3. Why should `POST`, `PUT`, and `DELETE` use different HTTP methods?
-4. What is the difference between a `400` error and a `404` error?
-5. How does the OpenAPI file relate to your Express server code?
-
-## Graduate Students
-
-Graduate students should complete this additional feature:
-
-Add validation so:
-
-- `name` must be a non-empty string.
-- `quantity` must be a number greater than or equal to zero.
-- Invalid `POST /items` and `PUT /items/:id` requests return status code `400`.
-- Invalid requests return a JSON error response.
-
-Graduate students must also add automated tests for invalid input.
-
-Document your graduate extension in your README and in your reflection answers.
-
-## Submission
-
-Submit your GitHub link in the Canvas assignment for `lab03-rest-api`.
-
-Your submission should include:
-
-- Your completed source code.
-- Your automated tests.
-- Your `openapi.yaml` file.
-- Your answers to the reflection questions.
-- Any graduate extension work, if applicable.
-
-Before submitting, verify that:
-
-```bash
-npm test
-```
-
-runs successfully.
+An `openapi.yaml` file is a blueprint for the Express server.  It defines the API endpoints, the expected data, and
+what data the API endpoints will return.  The workflow can be "Design First" or "Code First".
