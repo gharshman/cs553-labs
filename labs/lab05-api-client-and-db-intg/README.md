@@ -1,192 +1,92 @@
 # Lab 5 - API Client and Database Integration
 
-## Overview
+### Submitted by: Glenn R. Harshman, CS553-01, on June 20, 2026
 
-In this lab, you will start with a small full-stack application:
+The purpose of this lab was to understand how Node.js Express can run two services, API and HTTP,
+and allow the API service to serve as a "service-in-the-middle" between the HTTP server and the
+database server.
 
-- a browser client served on one port
-- an Express API served on another port
-- a Postgres database running in Docker
+### Lab Completion Process:
+- Instructor's upstream repository was fetched/merged
+- Student's remote repository was branched to "dev"
+- Lab was completed in branch "dev"
+- Added all functionality and endpoints/routes to API service
+- Created bash script `test-script.bash` to test API with curl commands
+- Extended `index.html` with button to `edit.html` page
+- Wrote `edit.html` page to allow PATCH and DELETE from browser client
+- README.MD file was updated
+- Switched back to "main", merged "dev", and branched "lab05" to preserve lab completion
+- Remote repository was pushed to student's Github local repository
+- Link was attached to Canvas submission
 
-The starter already demonstrates the basic integration path. The browser can
-load items from the API and create a new item. The API connects to Postgres,
-creates a table if needed, and stores data in the database instead of in memory.
+### API Routes
 
-Your job is to extend this starting point into a more complete REST-style API.
-You should add additional routes, update the client to use some of them, and
-practice thinking about resource design, validation, and status codes.
+| Route | Method |
+|-----------|--------|
+| `GET /health` | using `app.get()` |
+| `GET /api/items` | using `app.get()` |
+| `POST /api/items` | using `app.post()` |
+| `GET /api/items/:id` | using `app.get()` |
+| `PUT /api/items/:id` | using `app.put()` |
+| `PATCH /api/items/:id` | using `app.patch()` |
+| `DELETE /api/items/:id` | using `app.delete()` |
 
-This should stay small. The goal is not to build a semester project here. The
-goal is to get comfortable with the client/server/database boundary in a
-manageable codebase.
+### Features     
 
-## Learning Goals
+- Express API and HTTP servers
+- PostgreSQL database running in Docker
+- Collection of items with fields {`id`, `name`, `quantity`}.
+- Defined API routes:
+- Created bash script `test-script.bash` to test API with curl commands
 
-By the end of this lab, you should be able to:
+### Running the Lab (in Linux)
 
-- Run a Postgres database with Docker Compose.
-- Connect an Express server to Postgres using `pg`.
-- Read and write rows with SQL from route handlers.
-- Keep a browser client and API on separate origins and handle CORS correctly.
-- Extend an API beyond simple `GET` and `POST` routes.
-- Use `PUT`, `PATCH`, and `DELETE` with appropriate status codes.
-- Design at least one small resource well enough to support full CRUD behavior.
-
-## Starter Structure
-
-The starter directory includes:
-
-- `client/` for a plain browser client using `fetch`
-- `src/server.js` for the Express API
-- `docker-compose.yml` for Postgres
-- `package.json` for the API and client scripts
-
-The starter already implements:
-
-- `GET /health`
-- `GET /api/items`
-- `POST /api/items`
-
-The starter client can:
-
-- load items
-- submit a new item
-
-The starter database setup:
-
-- creates an `items` table
-- seeds a few example rows when the table is empty
-
-## Your Task
-
-Use the starter as a base and extend it.
-
-At minimum, implement the following additional routes:
-
-| Method | Route | Description |
-|---|---|---|
-| GET | `/api/items/:id` | Return one item by ID |
-| PUT | `/api/items/:id` | Replace one item |
-| PATCH | `/api/items/:id` | Partially update one item |
-| DELETE | `/api/items/:id` | Delete one item |
-
-Your implementation should:
-
-- validate route parameters and request bodies
-- return JSON responses
-- use reasonable status codes
-- return a `404` response when an item does not exist
-- distinguish between invalid input and missing resources
-- continue using Postgres as the source of truth
-
-## Suggested Scope
-
-Keep the data model simple. For example, an item can have:
-
-```json
-{
-  "id": 1,
-  "name": "Keyboard",
-  "quantity": 10
-}
-```
-
-You may add fields if they are useful, but do not let the lab grow too large.
-
-For the browser client, you do not need a polished UI. A small functional page
-is enough. Extend it just enough to demonstrate some of the routes you add.
-
-Examples:
-
-- add a delete button next to each item
-- add a simple edit form
-- add a detail view for one item
-
-## Optional Extensions
-
-If you finish early, choose one small extension:
-
-- add a second resource such as categories, tags, or projects
-- relate two resources with a foreign key
-- add filtering or search to one route
-- add a second client-side interaction beyond load/create
-
-Graduate students should complete at least one extension and document it in
-their starter README.
-
-## Running the Starter
-
-Move into the starter directory:
-
+#### In Terminal:
 ```bash
-cd labs/lab05-api-client-and-db-intg/starter
-```
-
-Install dependencies:
-
-```bash
+git clone https://github.com/gharshman/cs553-labs
+cd ./cs553-labs/labs/lab05-api-client-and-db-intg/starter
 npm install
-```
-
-Start Postgres:
-
-```bash
 docker compose up -d
+npm run api &
+npm client &
+bash ./src/test-script.bash
 ```
 
-Run the API:
+#### In Browser:
+* API Server runs on `http://localhost:3000` 
+* HTTP Server runs on `http://localhost:5173` 
 
-```bash
-npm run api
-```
+*****
+-----
+_______
 
-Run the browser client in a second terminal:
 
-```bash
-npm run client
-```
+## Reflection Questions & Answers
 
-Open:
+#### 1. What changed when the API moved from in-memory data to Postgres?
 
-```text
-http://localhost:5173
-```
+The database makes the data persistant, even if the API server is shut down.  It comes at a cost of speed and added complexity.
 
-The API runs on:
+#### 2. When should you use `PUT` instead of `PATCH`?
 
-```text
-http://localhost:3000
-```
+PUT replaces the entire record, and it is preferred if you want to ensure idempotent operations.
 
-The starter Postgres container is exposed on host port `5433`, so it is less
-likely to conflict with another local Postgres instance already using `5432`.
+#### 3. What kinds of validation belong in the API even if the browser client also validates input?
 
-## What to Notice in the Starter
+Browsers are not the only clients.  Your API must still perform data validation to protect against errors from curl, Postman, etc.
 
-As you read the starter, pay attention to:
+#### 4. How does the browser client help you test the API differently than `curl` alone?
 
-- how the database connection is configured
-- where the table creation and seed logic happens
-- how the API reads JSON request bodies
-- how SQL results are turned into JSON responses
-- how the browser client handles success and error states
-- how CORS allows the browser app to call the API across ports
+Browsers are used more commonly that any other client, and they behave differently too (added security, etc.)
 
-## Deliverables
+#### 5. If you added an extension, what did you add and why?
 
-Submit your completed starter directory with:
+I extended the client `index.html` by:
+* automatically displaying the list of items when the page loads, and
+* adding a button that takes the user to an `edit.html` page.
 
-- your implemented API routes
-- your updated client code
-- any schema or SQL changes you made
-- your reflection answers in the starter `README.md`
+On the `edit.html` page, the user can retrieve a record by item id #, and then either:
+* make changes to the name and/or quantity and then click `Edit`, or
+* click the `Delete` button.
 
-## Reflection Prompts
-
-Answer these in `starter/README.md`:
-
-1. What changed when the API moved from in-memory data to Postgres?
-2. When should you use `PUT` instead of `PATCH`?
-3. What kinds of validation belong in the API even if the browser client also validates input?
-4. How does the browser client help you test the API differently than `curl` alone?
-5. If you added an extension, what did you add and why?
+Whichever one they choose, they are required to confirm their choice via a Confirm window.

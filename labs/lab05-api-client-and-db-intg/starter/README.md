@@ -1,66 +1,37 @@
-# Lab 5 Starter
+# Lab 5 - API Client and Database Integration
 
-## How to Run
+### Submitted by: Glenn R. Harshman, CS553-01, on June 20, 2026
 
-```bash
-npm install
-docker compose up -d
-npm run api
-npm run client
-```
+*****
+-----
+_______
 
-Open:
+## Reflection Questions & Answers
 
-```text
-http://localhost:5173
-```
+#### 1. What changed when the API moved from in-memory data to Postgres?
 
-Postgres is exposed on:
+The database makes the data persistant, even if the API server is shut down.  It comes at a cost of speed and added complexity.
 
-```text
-postgres://postgres:postgres@localhost:5433/lab05
-```
+#### 2. When should you use `PUT` instead of `PATCH`?
 
-## What Already Works
+PUT replaces the entire record, and it is preferred if you want to ensure idempotent operations.
 
-- Postgres runs in Docker.
-- The Express server connects to Postgres.
-- The server creates and seeds an `items` table on startup.
-- `GET /health`, `GET /api/items`, and `POST /api/items` are implemented.
-- The browser client can load items and add a new item.
+#### 3. What kinds of validation belong in the API even if the browser client also validates input?
 
-## What You Need to Add
+Browsers are not the only clients.  Your API must still perform data validation to protect against errors from curl, Postman, etc.
 
-- `GET /api/items/:id`
-- `PUT /api/items/:id`
-- `PATCH /api/items/:id`
-- `DELETE /api/items/:id`
-- Better validation and error handling
-- Client-side UI for at least some of the new routes
+#### 4. How does the browser client help you test the API differently than `curl` alone?
 
-## Graduate Extension
+Browsers are used more commonly that any other client, and they behave differently too (added security, etc.)
 
-Add one more resource or relationship, such as categories, projects, or tags,
-and connect it to the database.
+#### 5. If you added an extension, what did you add and why?
 
-## Reflection Answers
+I extended the client `index.html` by:
+* automatically displaying the list of items when the page loads, and
+* adding a button that takes the user to an `edit.html` page.
 
-### 1. What changed when the API moved from in-memory data to Postgres?
+On the `edit.html` page, the user can retrieve a record by item id #, and then either:
+* make changes to the name and/or quantity and then click `Edit`, or
+* click the `Delete` button.
 
-TODO
-
-### 2. When should you use `PUT` instead of `PATCH`?
-
-TODO
-
-### 3. What kinds of validation belong in the API even if the browser client also validates input?
-
-TODO
-
-### 4. How does the browser client help you test the API differently than `curl` alone?
-
-TODO
-
-### 5. If you added an extension, what did you add and why?
-
-TODO
+Whichever one they choose, they are required to confirm their choice via a Confirm window.

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 5 Client</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+
+    <main class="page">
+
+      <section class="panel">
+
+        <h1>Edit Inventory Item</h1>
+        <p>Enter an ItemID and hit the "Find" button.</p>
+
+        <div class="actions">
+            <label>ItemID</label>
+            <table><tbody><tr>
+              <td style="width: 33%;"><input id="item-id" name="id" type="number"></td>
+              <td style="text-align: left;"><button id="find-item" type="button">Find</button></td>
+            </tr></tbody></table>
+            <div id="displayArea" style="margin-top: 20px;"></div>
+          </div>
+
+        <hr />
+        <form id="edit-item-form">
+          <label>
+            Name
+            <input id="item-name" name="name" type="text" required>
+          </label>
+
+          <label>
+            Quantity
+            <input id="item-quantity" name="quantity" type="number" min="0" required>
+          </label>
+
+          <table><tbody><tr>
+          <td><button id="patch-item" type="submit">Edit Item</button></td>
+          <td style="text-align: right;"><button id="del-item" style="background-color: #AA0000;" type="submit">Delete Item</button></td>
+          </tr></tbody></table>
+        </form>
+
+      </section>
+
+    </main>
+    
+    <script type="module" src="./appz.js" defer></script>
+
+  </body>
+</html>

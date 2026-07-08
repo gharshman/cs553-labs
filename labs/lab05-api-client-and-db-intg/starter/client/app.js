@@ -1,6 +1,8 @@
 const API_BASE_URL = "http://localhost:3000";
 
 const loadButton = document.querySelector("#load-items");
+const findButton = document.querySelector("#find-item");
+
 const itemList = document.querySelector("#items");
 const form = document.querySelector("#add-item-form");
 const itemNameInput = document.querySelector("#item-name");
@@ -39,6 +41,10 @@ async function loadItems() {
   }
 }
 
+async function findItemById() {
+  window.location.href = `http://localhost:5173/edit.html`;
+}
+
 async function addItem(name, quantity) {
   setStatus("Adding item...");
 
@@ -65,6 +71,7 @@ async function addItem(name, quantity) {
 }
 
 loadButton.addEventListener("click", loadItems);
+findButton.addEventListener("click", findItemById);
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -81,3 +88,12 @@ form.addEventListener("submit", async (event) => {
   itemQuantityInput.value = "0";
   await addItem(name, quantity);
 });
+
+
+function init() {
+    console.log("DOM is completely parsed and ready!");
+//    loadButton.click();
+    loadItems();
+  }
+
+document.addEventListener("DOMContentLoaded", init);
