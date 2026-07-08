@@ -26,10 +26,14 @@ export function createApp() {
     ]
   }));
 
-  app.get("/health", async (req, res) => {
+  app.set('json spaces', 2);
+
+  app.get("/", async (req, res) => {
     try {
       await pool.query("SELECT 1");
-      res.json({ status: "ok" });
+      res.status(200).json({ 
+        status: 200, 
+        message: "Server ok -- Nothing at this endpoint though." });
     } catch (error) {
       console.error("Health check failed:", error);
       res.status(500).json({
@@ -39,7 +43,23 @@ export function createApp() {
     }
   });
 
-  // Starter route: return every item from the database.
+
+  app.get("/health", async (req, res) => {
+    try {
+      await pool.query("SELECT 1");
+      res.status(200).json({
+        status: 200,
+        message: "Server ok -- Healthy and humming." });
+    } catch (error) {
+      console.error("Health check failed:", error);
+      res.status(500).json({
+        status: "error",
+        message: "Database connection failed."
+      });
+    }
+  });
+
+
   app.get("/api/items", async (req, res) => {
     try {
       const result = await pool.query(`
@@ -48,23 +68,25 @@ export function createApp() {
         ORDER BY id ASC
       `);
 
-      res.json({ items: result.rows });
+      res.status(200).json({ items: result.rows });
     } catch (error) {
       console.error("Failed to load items:", error);
       res.status(500).json({
+        status: 500,
         error: "Internal Server Error",
         message: "Failed to load items."
       });
     }
   });
 
-  // Starter route: create one item so the client can demonstrate a write.
+
   app.post("/api/items", async (req, res) => {
     const name = req.body?.name?.trim();
     const quantity = Number(req.body?.quantity);
 
     if (!name || !Number.isInteger(quantity) || quantity < 0) {
       return res.status(400).json({
+        status: 400,
         error: "Bad Request",
         message: "A name and non-negative integer quantity are required."
       });
@@ -79,40 +101,123 @@ export function createApp() {
         `,
         [name, quantity]
       );
-
       res.status(201).json({ item: result.rows[0] });
+
     } catch (error) {
       console.error("Failed to add item:", error);
       res.status(500).json({
+        status: 500,
         error: "Internal Server Error",
         message: "Failed to add item."
       });
     }
   });
 
-  // TODO: Return one item by ID.
-  app.get("/api/items/:id", (req, res) => {
-    res.status(501).json({ error: "Not implemented yet" });
+
+  app.get("/api/items/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+      const sql = `SELECT * FROM items WHERE id = $1 LIMIT 1;`;
+      const result = await pool.query(sql, [id]);
+      if (result.rows.length === 0) {
+        return res.status(404).json({ status: 404, message: 'Item not found' });
+      } 
+      return res.status(200).json({ items: result.rows[0] });
+    } catch (error) {
+      console.error("Failed to load item:", error);
+      res.status(500).json({
+        status: 500,
+        error: "Internal Server Error",
+        message: "Failed to load item."
+      });
+    }
   });
 
-  // TODO: Replace one item by ID.
-  app.put("/api/items/:id", (req, res) => {
-    res.status(501).json({ error: "Not implemented yet" });
+
+  app.put("/api/items/:id", async (req, res) => {
+    const { id } = req.params;
+    const { name, quantity } = req.body;
+    try {
+      const sql = `UPDATE items
+                   SET name = $1, quantity = $2
+                   WHERE id = $3
+                   RETURNING *;`;
+      const values = [name, quantity, id];
+      const result = await pool.query(sql, values);
+      if (result.rows.length === 0) {
+        return res.status(404).json({ status: 404, message: 'Item not found' });
+      } 
+      return res.status(200).json({ message: "Item updated successfully", items: result.rows[0] });
+    } catch (error) {
+      console.error("Failed to load item:", error);
+      res.status(500).json({
+        status: 500,
+        error: "Internal Server Error",
+        message: "Failed to load item."
+      });
+    }
   });
 
-  // TODO: Partially update one item by ID.
-  app.patch("/api/items/:id", (req, res) => {
-    res.status(501).json({ error: "Not implemented yet" });
+
+  app.patch("/api/items/:id", async (req, res) => {
+    const { id } = req.params;
+    const { name, quantity } = req.body;
+    if (typeof name === 'undefined' && typeof quantity === 'undefined') {
+      return res.status(400).json({ status: 400, error: "No fields provided for update" });
+    }
+
+    try {
+      const sql = `UPDATE items
+                   SET 
+                      name     = COALESCE($1, name),
+                      quantity = COALESCE($2, quantity)
+                   WHERE id = $3
+                   RETURNING *;
+                  `;
+      const values = [name, quantity, id];
+      const result = await pool.query(sql, values);
+      if (result.rows.length === 0) {
+        return res.status(404).json({ status: 404, message: 'Item not found' });
+      } 
+      return res.status(200).json({ status: 200, message: "Item updated successfully", items: result.rows[0] });
+    } catch (error) {
+      console.error("Failed to load item:", error);
+      res.status(500).json({
+        status: 500,
+        error: "Internal Server Error",
+        message: "Failed to load item."
+      });
+    }
   });
 
-  // TODO: Delete one item by ID.
-  app.delete("/api/items/:id", (req, res) => {
-    res.status(501).json({ error: "Not implemented yet" });
+
+  app.delete("/api/items/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+      const sql = `DELETE FROM items WHERE id = $1 RETURNING *;`;
+      const result = await pool.query(sql, [id]);
+      if (result.rows.length === 0) {
+        return res.status(404).json({ status: 404,
+                                      message: 'Item not found' });
+      } 
+      return res.status(200).json({ status: 200,
+                                    message: "Item deleted",
+                                    deletedItem: result.rows[0] });
+    } catch (error) {
+      console.error("Failed to load item:", error);
+      res.status(500).json({
+        status: 500,
+        error: "Internal Server Error",
+        message: "Failed to load item."
+      });
+    }
   });
+
 
   app.use((req, res) => {
-    res.status(404).json({ error: "Not found" });
+    res.status(404).json({ status: 400, error: "Endpoint Not found" });
   });
+
 
   return app;
 }
